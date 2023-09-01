@@ -2,3 +2,5 @@
 kaggle.json
 data/my_submission.csv
 .vs/
+.venv/
+src/__pycache__/

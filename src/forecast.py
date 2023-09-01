@@ -6,16 +6,18 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 import pmdarima
 import numpy as np
 
-def run():
-    # Constants 
-    train_set = './data/sales_train.csv'
-    test_set = './data/test.csv'
-    subs_set = './data/sample_submission.csv'
-    items = './data/items.csv'
-    categories = './data/item_categories.csv'
-    shops = './data/shops.csv'
 
-    # Open the .csv file  
+# Constants
+train_set = 'data/sales_train.csv'
+test_set = 'data/test.csv'
+subs_set = 'data/sample_submission.csv'
+items = 'data/items.csv'
+categories = 'data/item_categories.csv'
+shops = 'data/shops.csv'
+
+
+def run():
+    # Open the .csv file
     df_train_set = pd.read_csv(train_set, parse_dates=["date"]) # Training
     df_test_set = pd.read_csv(test_set) # Test
     df_subs_set = pd.read_csv(subs_set) # Sample submission
@@ -27,22 +29,20 @@ def run():
     print(f"Test/Initial shape: {df_train_set.shape}.")
     print(f"Sub/Initial shape: {df_train_set.shape}.")
 
-    # Creating the df_train 
+    # Creating the df_train
     df_train_shop = pd.merge(df_train_set, df_shops_set, on='shop_id', how='inner')
     df_train_shop_item = pd.merge(df_train_shop, df_items_set, on='item_id', how='inner')
     df_train = pd.merge(df_train_shop_item, df_categories_set, on='item_category_id', how='inner')
-    # df_train = df_train.drop(['shop_id', 'item_id', 'item_category_id'], axis=1)
 
     # Creating the df_test / df_subs
     df_test_shop = pd.merge(df_test_set, df_shops_set, on='shop_id', how='inner')
     df_test_shop_items = pd.merge(df_test_shop, df_items_set, on='item_id', how='inner')
     df_test = pd.merge(df_test_shop_items, df_categories_set, on='item_category_id', how='inner')
-    # df_test = df_test.drop(['shop_id', 'item_id', 'item_category_id'], axis=1)
 
-    # Train 
+    # Train
     df_train_rows, df_train_columns = df_train.shape
 
-    # Test 
+    # Test
     df_test_rows, df_test_columns = df_test.shape
     print('Train set : \n train.csv : {} (rows/columns).'.format(df_train.shape))
     print('Test set : \n test.csv : {} (rows/columns).'.format(df_test.shape))
@@ -106,7 +106,7 @@ def run():
         except UserWarning:
             pass
         # model
-        model = SARIMAX(data.values, order=r.order, seasonal_order=r.seasonal_order)
+        model = SARIMAX(data.values, order=r.order, seasonal_order=(0, 0, 0, 0)) #r.seasonal_order)
         try:
             model_fit = model.fit(disp=0)
         except Exception:
