@@ -70,6 +70,7 @@ def run():
     )
     print(f"Final shape: {df_train_set.shape}.")
 
+    print("Creating pivot table")
     index = ["shop_id", "item_id", "item_category_id"]
     df_train_pivot = df_train.pivot_table(
         index=index,
@@ -84,8 +85,8 @@ def run():
     max_date_block_num = df_train.date_block_num.max()
     df_train_pivot["topredict"] = pd.isna
     df_train_pivot = df_train_pivot.drop(columns=["All"])
-    df_train_pivot
 
+    print("Filtering pivot table")
     df_train_pivot_filtered = (
         pd.merge(
             left=df_train_pivot,
@@ -93,7 +94,9 @@ def run():
             on=["shop_id", "item_id", "item_category_id"],
         )
     )
+    return df_train_pivot_filtered
 
+def train(df_train_pivot_filtered):
     for index, row in tqdm(df_train_pivot_filtered.iterrows(), total=df_train_pivot_filtered.shape[0]):
         data = row[range(33)]
         mean = data.mean()
